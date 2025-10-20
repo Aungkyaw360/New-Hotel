@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Bed, Calendar, Users, Hotel } from 'lucide-react';
+import { LayoutDashboard, Bed, Calendar, Users, Hotel, Sparkles, UserCog } from 'lucide-react';
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -9,6 +9,8 @@ const Layout = ({ children }) => {
     { name: 'Rooms', href: '/rooms', icon: Bed },
     { name: 'Bookings', href: '/bookings', icon: Calendar },
     { name: 'Guests', href: '/guests', icon: Users },
+    { name: 'Housekeeping', href: '/housekeeping', icon: Sparkles },
+    { name: 'Staff', href: '/staff', icon: UserCog },
   ];
 
   const isActive = (path) => {

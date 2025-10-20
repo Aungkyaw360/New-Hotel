@@ -6,7 +6,7 @@ A full-stack hotel management web application built with React, Express.js, and 
 
 - **Dashboard**: Real-time statistics and analytics
   - Total rooms, guests, and bookings overview
-  - Revenue tracking
+  - Revenue tracking (in Myanmar Kyat - MMK)
   - Today's check-ins and check-outs
   - Recent bookings list
 
@@ -14,7 +14,7 @@ A full-stack hotel management web application built with React, Express.js, and 
   - Add, edit, and delete rooms
   - Track room status (Available, Occupied, Maintenance)
   - Manage room types (Single, Double, Suite, Deluxe)
-  - Set pricing and capacity
+  - Set pricing and capacity (in MMK)
   - Add amenities and descriptions
 
 - **Booking/Reservation System**:
@@ -23,11 +23,27 @@ A full-stack hotel management web application built with React, Express.js, and 
   - Check-in and check-out functionality
   - Track booking status (Confirmed, Completed, Cancelled)
   - Special requests handling
+  - Pricing in Myanmar Kyat (MMK)
 
 - **Guest Management**:
   - Register and manage guest information
   - Track contact details and ID numbers
   - Guest history and information
+
+- **Housekeeping Management** ✨ NEW:
+  - Create and assign housekeeping tasks
+  - Track task status (Pending, In Progress, Completed)
+  - Set task priority (Low, Normal, High)
+  - Schedule tasks by date
+  - Assign tasks to staff members
+  - Multiple task types (Cleaning, Maintenance, Inspection, Laundry, Restocking)
+  - Filter tasks by status
+
+- **Staff Management** ✨ NEW:
+  - Add and manage staff members
+  - Different roles (Admin, Manager, Receptionist, Housekeeping)
+  - User authentication ready
+  - Track staff information and contact details
 
 ## Tech Stack
 
@@ -156,6 +172,21 @@ hotel-management-system/
 - `POST /api/bookings/:id/checkout` - Check out booking
 - `DELETE /api/bookings/:id` - Delete booking
 
+### Staff ✨ NEW
+- `GET /api/staff` - Get all staff members
+- `GET /api/staff/:id` - Get single staff member
+- `POST /api/staff` - Create new staff member
+- `PUT /api/staff/:id` - Update staff member
+- `DELETE /api/staff/:id` - Delete staff member
+
+### Housekeeping ✨ NEW
+- `GET /api/housekeeping` - Get all housekeeping tasks
+- `GET /api/housekeeping/:id` - Get single task
+- `POST /api/housekeeping` - Create new task
+- `PUT /api/housekeeping/:id` - Update task
+- `POST /api/housekeeping/:id/complete` - Mark task as completed
+- `DELETE /api/housekeeping/:id` - Delete task
+
 ### Dashboard
 - `GET /api/dashboard/stats` - Get dashboard statistics
 - `GET /api/dashboard/recent-bookings` - Get recent bookings
@@ -163,9 +194,11 @@ hotel-management-system/
 ## Default Data
 
 The application comes pre-seeded with 10 sample rooms of different types:
-- Single rooms: $80/night
-- Double rooms: $120/night
-- Suites: $250/night
+- Single rooms: 80,000 MMK/night
+- Double rooms: 120,000 MMK/night
+- Suites: 250,000 MMK/night
+
+**Currency**: All prices are in Myanmar Kyat (MMK)
 
 ## Environment Variables
 

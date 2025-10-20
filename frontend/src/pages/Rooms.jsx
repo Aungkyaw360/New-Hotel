@@ -138,7 +138,7 @@ const Rooms = () => {
             
             <div className="space-y-2 mb-4">
               <p className="text-sm text-gray-600">
-                <span className="font-medium">Price:</span> ${room.price_per_night}/night
+                <span className="font-medium">Price:</span> {room.price_per_night.toLocaleString()} MMK/night
               </p>
               <p className="text-sm text-gray-600">
                 <span className="font-medium">Capacity:</span> {room.capacity} {room.capacity === 1 ? 'person' : 'people'}
@@ -217,7 +217,7 @@ const Rooms = () => {
               </div>
 
               <div>
-                <label className="label">Price per Night ($)</label>
+                <label className="label">Price per Night (MMK)</label>
                 <input
                   type="number"
                   className="input"
@@ -225,7 +225,7 @@ const Rooms = () => {
                   onChange={(e) => setFormData({ ...formData, price_per_night: e.target.value })}
                   required
                   min="0"
-                  step="0.01"
+                  step="100"
                 />
               </div>
 

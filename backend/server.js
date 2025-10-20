@@ -375,6 +375,220 @@ app.get('/api/dashboard/recent-bookings', (req, res) => {
   }
 });
 
+// ============ STAFF ROUTES ============
+// Get all staff
+app.get('/api/staff', (req, res) => {
+  try {
+    const staff = db.prepare('SELECT * FROM staff ORDER BY created_at DESC').all();
+    res.json(staff);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get single staff member
+app.get('/api/staff/:id', (req, res) => {
+  try {
+    const staff = db.prepare('SELECT * FROM staff WHERE id = ?').get(req.params.id);
+    if (!staff) {
+      return res.status(404).json({ error: 'Staff member not found' });
+    }
+    res.json(staff);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Create staff member
+app.post('/api/staff', (req, res) => {
+  try {
+    const { username, password, full_name, role, email } = req.body;
+    const result = db.prepare(`
+      INSERT INTO staff (username, password, full_name, role, email)
+      VALUES (?, ?, ?, ?, ?)
+    `).run(username, password, full_name, role, email);
+    
+    const newStaff = db.prepare('SELECT * FROM staff WHERE id = ?').get(result.lastInsertRowid);
+    res.status(201).json(newStaff);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update staff member
+app.put('/api/staff/:id', (req, res) => {
+  try {
+    const { username, full_name, role, email } = req.body;
+    db.prepare(`
+      UPDATE staff 
+      SET username = ?, full_name = ?, role = ?, email = ?
+      WHERE id = ?
+    `).run(username, full_name, role, email, req.params.id);
+    
+    const updatedStaff = db.prepare('SELECT * FROM staff WHERE id = ?').get(req.params.id);
+    res.json(updatedStaff);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete staff member
+app.delete('/api/staff/:id', (req, res) => {
+  try {
+    db.prepare('DELETE FROM staff WHERE id = ?').run(req.params.id);
+    res.json({ message: 'Staff member deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ============ HOUSEKEEPING ROUTES ============
+// Get all housekeeping tasks
+app.get('/api/housekeeping', (req, res) => {
+  try {
+    const { status } = req.query;
+    let query = `
+      SELECT 
+        h.*,
+        r.room_number,
+        r.room_type,
+        s.full_name as staff_name
+      FROM housekeeping h
+      JOIN rooms r ON h.room_id = r.id
+      LEFT JOIN staff s ON h.staff_id = s.id
+    `;
+    
+    if (status) {
+      query += ' WHERE h.status = ?';
+      const tasks = db.prepare(query + ' ORDER BY h.scheduled_date DESC').all(status);
+      return res.json(tasks);
+    }
+    
+    const tasks = db.prepare(query + ' ORDER BY h.scheduled_date DESC').all();
+    res.json(tasks);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get single housekeeping task
+app.get('/api/housekeeping/:id', (req, res) => {
+  try {
+    const task = db.prepare(`
+      SELECT 
+        h.*,
+        r.room_number,
+        r.room_type,
+        s.full_name as staff_name
+      FROM housekeeping h
+      JOIN rooms r ON h.room_id = r.id
+      LEFT JOIN staff s ON h.staff_id = s.id
+      WHERE h.id = ?
+    `).get(req.params.id);
+    
+    if (!task) {
+      return res.status(404).json({ error: 'Housekeeping task not found' });
+    }
+    res.json(task);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Create housekeeping task
+app.post('/api/housekeeping', (req, res) => {
+  try {
+    const { room_id, staff_id, task_type, priority, notes, scheduled_date } = req.body;
+    const result = db.prepare(`
+      INSERT INTO housekeeping (room_id, staff_id, task_type, priority, notes, scheduled_date)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(room_id, staff_id || null, task_type, priority || 'normal', notes || '', scheduled_date);
+    
+    const newTask = db.prepare(`
+      SELECT 
+        h.*,
+        r.room_number,
+        r.room_type,
+        s.full_name as staff_name
+      FROM housekeeping h
+      JOIN rooms r ON h.room_id = r.id
+      LEFT JOIN staff s ON h.staff_id = s.id
+      WHERE h.id = ?
+    `).get(result.lastInsertRowid);
+    
+    res.status(201).json(newTask);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update housekeeping task
+app.put('/api/housekeeping/:id', (req, res) => {
+  try {
+    const { room_id, staff_id, status, task_type, priority, notes, scheduled_date, completed_date } = req.body;
+    db.prepare(`
+      UPDATE housekeeping 
+      SET room_id = ?, staff_id = ?, status = ?, task_type = ?, priority = ?, 
+          notes = ?, scheduled_date = ?, completed_date = ?
+      WHERE id = ?
+    `).run(room_id, staff_id || null, status, task_type, priority, notes, scheduled_date, completed_date || null, req.params.id);
+    
+    const updatedTask = db.prepare(`
+      SELECT 
+        h.*,
+        r.room_number,
+        r.room_type,
+        s.full_name as staff_name
+      FROM housekeeping h
+      JOIN rooms r ON h.room_id = r.id
+      LEFT JOIN staff s ON h.staff_id = s.id
+      WHERE h.id = ?
+    `).get(req.params.id);
+    
+    res.json(updatedTask);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Mark task as completed
+app.post('/api/housekeeping/:id/complete', (req, res) => {
+  try {
+    const now = new Date().toISOString();
+    db.prepare(`
+      UPDATE housekeeping 
+      SET status = 'completed', completed_date = ?
+      WHERE id = ?
+    `).run(now, req.params.id);
+    
+    const task = db.prepare(`
+      SELECT 
+        h.*,
+        r.room_number,
+        r.room_type,
+        s.full_name as staff_name
+      FROM housekeeping h
+      JOIN rooms r ON h.room_id = r.id
+      LEFT JOIN staff s ON h.staff_id = s.id
+      WHERE h.id = ?
+    `).get(req.params.id);
+    
+    res.json(task);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete housekeeping task
+app.delete('/api/housekeeping/:id', (req, res) => {
+  try {
+    db.prepare('DELETE FROM housekeeping WHERE id = ?').run(req.params.id);
+    res.json({ message: 'Housekeeping task deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Hotel Management API is running' });
