@@ -50,7 +50,7 @@ const Dashboard = () => {
     },
     {
       name: 'Total Revenue',
-      value: `$${stats.totalRevenue.toFixed(2)}`,
+      value: `${stats.totalRevenue.toLocaleString()} MMK`,
       icon: DollarSign,
       color: 'bg-yellow-500',
       subtext: 'All time',
@@ -162,7 +162,7 @@ const Dashboard = () => {
                       {new Date(booking.check_out_date).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      ${booking.total_amount.toFixed(2)}
+                      {booking.total_amount.toLocaleString()} MMK
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span

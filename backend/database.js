@@ -85,6 +85,24 @@ export function initializeDatabase() {
     )
   `);
 
+  // Housekeeping table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS housekeeping (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      room_id INTEGER NOT NULL,
+      staff_id INTEGER,
+      status TEXT DEFAULT 'pending',
+      task_type TEXT NOT NULL,
+      priority TEXT DEFAULT 'normal',
+      notes TEXT,
+      scheduled_date DATE NOT NULL,
+      completed_date DATETIME,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (room_id) REFERENCES rooms(id),
+      FOREIGN KEY (staff_id) REFERENCES staff(id)
+    )
+  `);
+
   console.log('Database initialized successfully');
 }
 
@@ -99,16 +117,16 @@ export function seedDatabase() {
     `);
 
     const rooms = [
-      ['101', 'Single', 80, 1, 'available', 'Cozy single room with city view', 'WiFi,TV,AC'],
-      ['102', 'Single', 80, 1, 'available', 'Comfortable single room', 'WiFi,TV,AC'],
-      ['201', 'Double', 120, 2, 'available', 'Spacious double room with balcony', 'WiFi,TV,AC,Balcony'],
-      ['202', 'Double', 120, 2, 'available', 'Modern double room', 'WiFi,TV,AC,Minibar'],
-      ['301', 'Suite', 250, 4, 'available', 'Luxury suite with ocean view', 'WiFi,TV,AC,Balcony,Minibar,Jacuzzi'],
-      ['302', 'Suite', 250, 4, 'available', 'Presidential suite', 'WiFi,TV,AC,Balcony,Minibar,Jacuzzi,Kitchen'],
-      ['103', 'Single', 80, 1, 'available', 'Budget-friendly single room', 'WiFi,TV'],
-      ['203', 'Double', 120, 2, 'available', 'Family-friendly double room', 'WiFi,TV,AC'],
-      ['204', 'Double', 120, 2, 'occupied', 'Deluxe double room', 'WiFi,TV,AC,Minibar'],
-      ['303', 'Suite', 250, 4, 'maintenance', 'Royal suite under renovation', 'WiFi,TV,AC,Balcony,Minibar']
+      ['101', 'Single', 80000, 1, 'available', 'Cozy single room with city view', 'WiFi,TV,AC'],
+      ['102', 'Single', 80000, 1, 'available', 'Comfortable single room', 'WiFi,TV,AC'],
+      ['201', 'Double', 120000, 2, 'available', 'Spacious double room with balcony', 'WiFi,TV,AC,Balcony'],
+      ['202', 'Double', 120000, 2, 'available', 'Modern double room', 'WiFi,TV,AC,Minibar'],
+      ['301', 'Suite', 250000, 4, 'available', 'Luxury suite with ocean view', 'WiFi,TV,AC,Balcony,Minibar,Jacuzzi'],
+      ['302', 'Suite', 250000, 4, 'available', 'Presidential suite', 'WiFi,TV,AC,Balcony,Minibar,Jacuzzi,Kitchen'],
+      ['103', 'Single', 80000, 1, 'available', 'Budget-friendly single room', 'WiFi,TV'],
+      ['203', 'Double', 120000, 2, 'available', 'Family-friendly double room', 'WiFi,TV,AC'],
+      ['204', 'Double', 120000, 2, 'occupied', 'Deluxe double room', 'WiFi,TV,AC,Minibar'],
+      ['303', 'Suite', 250000, 4, 'maintenance', 'Royal suite under renovation', 'WiFi,TV,AC,Balcony,Minibar']
     ];
 
     rooms.forEach(room => insertRoom.run(...room));

@@ -43,4 +43,23 @@ export const dashboardAPI = {
   getRecentBookings: () => api.get('/dashboard/recent-bookings'),
 };
 
+// Staff API
+export const staffAPI = {
+  getAll: () => api.get('/staff'),
+  getById: (id) => api.get(`/staff/${id}`),
+  create: (data) => api.post('/staff', data),
+  update: (id, data) => api.put(`/staff/${id}`, data),
+  delete: (id) => api.delete(`/staff/${id}`),
+};
+
+// Housekeeping API
+export const housekeepingAPI = {
+  getAll: (params) => api.get('/housekeeping', { params }),
+  getById: (id) => api.get(`/housekeeping/${id}`),
+  create: (data) => api.post('/housekeeping', data),
+  update: (id, data) => api.put(`/housekeeping/${id}`, data),
+  complete: (id) => api.post(`/housekeeping/${id}/complete`),
+  delete: (id) => api.delete(`/housekeeping/${id}`),
+};
+
 export default api;

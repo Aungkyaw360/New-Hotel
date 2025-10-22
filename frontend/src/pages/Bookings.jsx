@@ -215,7 +215,7 @@ const Bookings = () => {
                       {new Date(booking.check_out_date).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      ${booking.total_amount.toFixed(2)}
+                      {booking.total_amount.toLocaleString()} MMK
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(booking.status)}`}>
@@ -297,7 +297,7 @@ const Bookings = () => {
                   <option value="">Select a room</option>
                   {rooms.filter(r => r.status === 'available' || (editingBooking && r.id === editingBooking.room_id)).map((room) => (
                     <option key={room.id} value={room.id}>
-                      Room {room.room_number} - {room.room_type} (${room.price_per_night}/night)
+                      Room {room.room_number} - {room.room_type} ({room.price_per_night.toLocaleString()} MMK/night)
                     </option>
                   ))}
                 </select>
@@ -326,7 +326,7 @@ const Bookings = () => {
               </div>
 
               <div>
-                <label className="label">Total Amount ($)</label>
+                <label className="label">Total Amount (MMK)</label>
                 <input
                   type="number"
                   className="input"
@@ -334,7 +334,7 @@ const Bookings = () => {
                   onChange={(e) => setFormData({ ...formData, total_amount: e.target.value })}
                   required
                   min="0"
-                  step="0.01"
+                  step="100"
                   readOnly
                 />
               </div>
